@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import abstracts.Publication;
 import classes.*;
 import enums.Periodicity;
-import exceptions.InacceptableDateException;
+import exceptions.UnacceptableDateException;
 
 public class Archive {
 	
@@ -166,8 +166,8 @@ public class Archive {
 							title = input.nextLine();
 							System.out.println("Input the Year of Publishing");
 							year = Integer.parseInt(input.nextLine());
-							if (year < 1500) throw new InacceptableDateException("The publishing year can't be too far in the past");
-							else if (year > 2023) throw new InacceptableDateException("The publishing year can't be in the future");
+							if (year < 1500) throw new UnacceptableDateException("The publishing year can't be too far in the past");
+							else if (year > 2023) throw new UnacceptableDateException("The publishing year can't be in the future");
 							System.out.println("Input the Number of Pages");
 							pages = Integer.parseInt(input.nextLine());
 							System.out.println("Input the Author");
@@ -183,8 +183,8 @@ public class Archive {
 							title = input.nextLine();
 							System.out.println("Input the Year of Publishing");
 							year = Integer.parseInt(input.nextLine());
-							if (year < 1500) throw new InacceptableDateException("The publishing year can't be too far in the past");
-							else if (year > 2023) throw new InacceptableDateException("The publishing year can't be in the future");
+							if (year < 1500) throw new UnacceptableDateException("The publishing year can't be too far in the past");
+							else if (year > 2023) throw new UnacceptableDateException("The publishing year can't be in the future");
 							System.out.println("Input the Number of Pages");
 							pages = Integer.parseInt(input.nextLine());
 							System.out.println("Input the periodicity");
@@ -219,7 +219,7 @@ public class Archive {
 			} catch (NumberFormatException e) {
 				System.out.println("You have to input a valid number");
 				mainMenu();	
-			} catch (InacceptableDateException e) {
+			} catch (UnacceptableDateException e) {
 				System.out.println(e.getMessage());
 				mainMenu();
 			}
