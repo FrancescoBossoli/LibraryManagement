@@ -1,6 +1,7 @@
 package classes;
 
 import abstracts.Publication;
+import exceptions.FieldLengthException;
 
 public class Book extends Publication {
 	
@@ -23,7 +24,8 @@ public class Book extends Publication {
 	}
 
 	public void setAuthor(String author) {
-		this.author = author;
+		if (author.length()>2) this.author = author;		
+		else throw new FieldLengthException("A Publication's Author field can't be less than 3 characters long");
 	}
 
 	public String getGenre() {
@@ -31,7 +33,8 @@ public class Book extends Publication {
 	}
 
 	public void setGenre(String genre) {
-		this.genre = genre;
+		if (genre.length()>2) this.genre = genre;		
+		else throw new FieldLengthException("A Publication's Title can't be less than 2 characters long");
 	}
 	
 	@Override

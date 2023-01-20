@@ -8,8 +8,8 @@ public class Magazine extends Publication {
 	private Periodicity periodicity;	
 
 	public Magazine(String ISBNCode, String title, int publishingYear, int pageNumber, Periodicity periodicity) {
-		super(ISBNCode, title, publishingYear, pageNumber);
-		setPeriodicity(periodicity);
+		super(ISBNCode, title, publishingYear, pageNumber);		
+			setPeriodicity(periodicity);				
 	}
 	
 	public static Magazine fromCodedString(String x) {

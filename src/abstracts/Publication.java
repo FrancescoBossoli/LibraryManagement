@@ -3,6 +3,7 @@ package abstracts;
 import java.util.ArrayList;
 import java.util.List;
 
+import exceptions.FieldLengthException;
 import exceptions.ISBNException;
 
 //abstract class shared between books and magazines
@@ -20,7 +21,9 @@ public abstract class Publication {
 			this.setTitle(title);
 			this.setPublishingYear(publishingYear);
 			this.setPageNumber(pageNumber);
-		} catch (ISBNException e) {
+		} 	catch (ISBNException e) {
+			System.out.println(e.getMessage());
+		}	catch (FieldLengthException e) {
 			System.out.println(e.getMessage());
 		}
 	}
@@ -34,7 +37,7 @@ public abstract class Publication {
 			this.ISBNCode = ISBNCode;
 			univocalCodes.add(ISBNCode);
 		} else {
-			throw new ISBNException("Errore: Codice ISBN " + ISBNCode + " già assegnato a una voce in catalogo");
+			throw new ISBNException("Error: Code ISBN " + ISBNCode + " already used in the Library Catalogue");
 		}
 	}
 
@@ -43,13 +46,14 @@ public abstract class Publication {
 	}
 
 	public void setTitle(String title) {
-		this.title = title;
+		if (title.length()>2) this.title = title;
+		else throw new FieldLengthException("A Publication's Title field can't be less than 3 characters long");
 	}
 
 	public int getPublishingYear() {
 		return publishingYear;
 	}
-
+	//missing exception because the control is on the input
 	public void setPublishingYear(int publishingYear) {
 		this.publishingYear = publishingYear;
 	}
@@ -57,11 +61,10 @@ public abstract class Publication {
 	public int getPageNumber() {
 		return pageNumber;
 	}
-
+	//missing exception because the control is on the input 
 	public void setPageNumber(int pageNumber) {
 		this.pageNumber = pageNumber;
 	}
 
 	public abstract String toCodedString();
-
 }
