@@ -14,14 +14,14 @@ public class Magazine extends Publication {
 	
 	public static Magazine fromCodedString(String x) {
 		String[] split = x.split("@");		
-		return new Magazine(split[0], split[1], Integer.valueOf(split[2]), Integer.valueOf(split[3]), Periodicity.valueOf(split[4]));
+		return new Magazine(split[0], split[1], Integer.parseInt(split[2]), Integer.parseInt(split[3]), Periodicity.valueOf(split[4]));
 	}
 	
 	public Periodicity getPeriodicity() {
 		return periodicity;
 	}
 
-	public void setPeriodicity(Periodicity periodicity) {
+	private void setPeriodicity(Periodicity periodicity) {
 		this.periodicity = periodicity;
 	}
 
@@ -31,6 +31,7 @@ public class Magazine extends Publication {
 				+ this.getPublishingYear() + " | Page Count: " + this.getPageNumber() + " | Periodicity: " + getPeriodicity();		
 	}
 	
+	@Override
 	public String toCodedString() {
 		return this.getISBNCode() + "@" + this.getTitle() + "@" + this.getPublishingYear() + "@" + this.getPageNumber() + "@" + getPeriodicity();
 	}	

@@ -2,6 +2,7 @@ package abstracts;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import exceptions.FieldLengthException;
 import exceptions.ISBNException;
@@ -21,9 +22,7 @@ public abstract class Publication {
 			this.setTitle(title);
 			this.setPublishingYear(publishingYear);
 			this.setPageNumber(pageNumber);
-		} 	catch (ISBNException e) {
-			System.out.println(e.getMessage());
-		}	catch (FieldLengthException e) {
+		} 	catch (ISBNException | FieldLengthException e) {
 			System.out.println(e.getMessage());
 		}
 	}
@@ -32,7 +31,7 @@ public abstract class Publication {
 		return ISBNCode;
 	}
 	
-	protected void setISBNCode(String ISBNCode) {
+	private void setISBNCode(String ISBNCode) {
 		if (!univocalCodes.contains(ISBNCode)) {
 			this.ISBNCode = ISBNCode;
 			univocalCodes.add(ISBNCode);
@@ -40,12 +39,20 @@ public abstract class Publication {
 			throw new ISBNException("Error: Code ISBN " + ISBNCode + " already used in the Library Catalogue");
 		}
 	}
+	
+	public static void removeISBNfromCodeList(String ISBNCode) {
+		univocalCodes = univocalCodes.stream().filter(code -> !code.equals(ISBNCode)).collect(Collectors.toList());
+	}
+	
+	public static void resetCatalog() {
+		univocalCodes.clear();
+	}
 
 	public String getTitle() {
 		return title;
 	}
 
-	public void setTitle(String title) {
+	private void setTitle(String title) {
 		if (title.length()>2) this.title = title;
 		else throw new FieldLengthException("A Publication's Title field can't be less than 3 characters long");
 	}
@@ -54,7 +61,7 @@ public abstract class Publication {
 		return publishingYear;
 	}
 	//missing exception because the control is on the input
-	public void setPublishingYear(int publishingYear) {
+	private void setPublishingYear(int publishingYear) {
 		this.publishingYear = publishingYear;
 	}
 
@@ -62,7 +69,7 @@ public abstract class Publication {
 		return pageNumber;
 	}
 	//missing exception because the control is on the input 
-	public void setPageNumber(int pageNumber) {
+	private void setPageNumber(int pageNumber) {
 		this.pageNumber = pageNumber;
 	}
 

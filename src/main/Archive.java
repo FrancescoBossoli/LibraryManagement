@@ -47,7 +47,7 @@ public class Archive {
 		String codedString = "";
 		for (Publication pub : catalogueList) {
 			if (pub instanceof Book) codedString += "#$";
-			else codedString += "#&";
+			else codedString += "#§";
 			codedString += pub.toCodedString();			
 		}
 		try {
@@ -63,6 +63,7 @@ public class Archive {
 			String x = FileUtils.readFileToString(backup, "UTF-8");
 			List<String> publications = Arrays.asList(x.split("#"));
 			catalogueList.clear();
+			Publication.resetCatalog();
 			for (String pub : publications) {
 				Publication newPub = null;
 				if (pub.startsWith("$")) {
@@ -88,6 +89,7 @@ public class Archive {
 			
 	public void removeByISBN(String code) {
 		catalogueList = catalogueList.stream().filter(pub -> !pub.getISBNCode().equals(code)).collect(Collectors.toList());
+		Publication.removeISBNfromCodeList(code);		
 	}		
 		
 	public List<Publication> searchByISBN(String code) {
@@ -107,20 +109,23 @@ public class Archive {
 	}
 		
 	private static void printList(List<Publication> list) {
-		if (list.size() == 0) System.out.println("No result has been found");		
+		if (list.isEmpty()) System.out.println("No result has been found");		
 		list.forEach(System.out::println);
 	}
 		
 	public void mainMenu() {
-		System.out.println(	  "------------------------------------------------- \n"
-							+ "Interactive Library Archive: \n" 
-							+ "1. Browse the Catalogue \n" 
-							+ "2. Search for a Publication \n"
-							+ "3. Add a new Publication to the Archive \n" 
-							+ "4. Remove a Publication from the Archive \n"
-							+ "5. Create a Local Backup \n" 
-							+ "6. Load the last available Backup \n \n" 
-							+ "0. Turn Off the Interactive Archive \n");
+		System.out.println("""
+                                   ------------------------------------------------- 
+                                   Interactive Library Archive: 
+                                   1. Browse the Catalogue 
+                                   2. Search for a Publication 
+                                   3. Add a new Publication to the Archive 
+                                   4. Remove a Publication from the Archive 
+                                   5. Create a Local Backup 
+                                   6. Load the last available Backup 
+                                    
+                                   0. Turn Off the Interactive Archive 
+                                   """);
 			
 		int selection = 10;
 		outerloop:
@@ -128,92 +133,87 @@ public class Archive {
 			try {
 				selection = Integer.parseInt(input.nextLine());
 				switch (selection) {
-				case 1:
-					printList(getCatalog());
-					break;
-				case 2:
-					 searchMenu();
-					 selection = Integer.parseInt(input.nextLine());
-					 switch (selection) {
-						case 1:
-							System.out.println("Input the ISBN Code");
-							printList(searchByISBN(input.nextLine()));
-							break;
-						case 2:
-							System.out.println("Input the Year of Publishing");
-							printList(searchByYear(Integer.parseInt(input.nextLine())));
-							break;
-						case 3:
-							System.out.println("Input the Author");
-							printList(searchByAuthor(input.nextLine()));
-							break;						
-						case 9:
-							break;
-						case 0:
-							break outerloop;
-					 }
-					 break;
-				case 3:
-					addMenu();
-					String code, title, author, genre = null;
-					int year, pages = 0;
-					selection = Integer.parseInt(input.nextLine());
-					switch (selection) {
-						case 1:
-							System.out.println("Input the ISBN Code");
-							code = input.nextLine();
-							System.out.println("Input the Title");
-							title = input.nextLine();
-							System.out.println("Input the Year of Publishing");
-							year = Integer.parseInt(input.nextLine());
-							if (year < 1500) throw new UnacceptableDateException("The publishing year can't be too far in the past");
-							else if (year > 2023) throw new UnacceptableDateException("The publishing year can't be in the future");
-							System.out.println("Input the Number of Pages");
-							pages = Integer.parseInt(input.nextLine());
-							System.out.println("Input the Author");
-							author = input.nextLine();
-							System.out.println("Input the Genre");
-							genre = input.nextLine();
-							addPublication(new Book(code, title, year, pages, author, genre));
-							break;
-						case 2:
-							System.out.println("Input the ISBN Code");
-							code = input.nextLine();
-							System.out.println("Input the Title");
-							title = input.nextLine();
-							System.out.println("Input the Year of Publishing");
-							year = Integer.parseInt(input.nextLine());
-							if (year < 1500) throw new UnacceptableDateException("The publishing year can't be too far in the past");
-							else if (year > 2023) throw new UnacceptableDateException("The publishing year can't be in the future");
-							System.out.println("Input the Number of Pages");
-							pages = Integer.parseInt(input.nextLine());
-							System.out.println("Input the periodicity");
-							try {
-								Periodicity period = Periodicity.valueOf(input.nextLine().toUpperCase());							
-								addPublication(new Magazine(code, title, year, pages, period));
-							} catch (IllegalArgumentException e) {
-								System.out.println("Periodicity can be only expressed as 'Weekly', 'Monthly' or 'Biannual'");
-							}						
-							break;
-						case 9:
-							break;
-						case 0:
-							break outerloop;
-					}
-					break;
-				case 4:
-					System.out.println("Input the ISBN Code of the Publication you want to delete");
-					removeByISBN(input.nextLine());
-					System.out.println("Any publications with the specified code have been removed from the archive");
-					break;
-				case 5: 
-					saveData();
-					break;
-				case 6:
-					printList(readData());
-					break;
-				case 0:
-					break outerloop;					
+				case 1 -> printList(getCatalog());
+				case 2 -> {
+                                    searchMenu();
+                                    selection = Integer.parseInt(input.nextLine());
+                                    switch (selection) {
+                                        case 1 -> {
+                                            System.out.println("Input the ISBN Code");
+                                            printList(searchByISBN(input.nextLine()));
+                                        }
+                                        case 2 -> {
+                                            System.out.println("Input the Year of Publishing");
+                                            printList(searchByYear(Integer.parseInt(input.nextLine())));
+                                        }
+                                        case 3 -> {
+                                            System.out.println("Input the Author");
+                                            printList(searchByAuthor(input.nextLine()));
+                                        }
+                                        case 9 -> {}
+                                        case 0 -> {
+                                            break outerloop;
+                                        }
+                                    }
+                                }
+				case 3 -> {
+                                    addMenu();
+                                    String code, title, author, genre;
+                                    int year, pages;
+                                    selection = Integer.parseInt(input.nextLine());
+                                    switch (selection) {
+                                        case 1 -> {
+                                            System.out.println("Input the ISBN Code");
+                                            code = input.nextLine();
+                                            System.out.println("Input the Title");
+                                            title = input.nextLine();
+                                            System.out.println("Input the Year of Publishing");
+                                            year = Integer.parseInt(input.nextLine());
+                                            if (year < 1500) throw new UnacceptableDateException("The publishing year can't be too far in the past");
+                                            else if (year > 2023) throw new UnacceptableDateException("The publishing year can't be in the future");
+                                            System.out.println("Input the Number of Pages");
+                                            pages = Integer.parseInt(input.nextLine());
+                                            System.out.println("Input the Author");
+                                            author = input.nextLine();
+                                            System.out.println("Input the Genre");
+                                            genre = input.nextLine();
+                                            addPublication(new Book(code, title, year, pages, author, genre));
+                                        }
+                                        case 2 -> {
+                                            System.out.println("Input the ISBN Code");
+                                            code = input.nextLine();
+                                            System.out.println("Input the Title");
+                                            title = input.nextLine();
+                                            System.out.println("Input the Year of Publishing");
+                                            year = Integer.parseInt(input.nextLine());
+                                            if (year < 1500) throw new UnacceptableDateException("The publishing year can't be too far in the past");
+                                            else if (year > 2023) throw new UnacceptableDateException("The publishing year can't be in the future");
+                                            System.out.println("Input the Number of Pages");
+                                            pages = Integer.parseInt(input.nextLine());
+                                            System.out.println("Input the periodicity");
+                                            try {
+                                                Periodicity period = Periodicity.valueOf(input.nextLine().toUpperCase());
+                                                addPublication(new Magazine(code, title, year, pages, period));
+                                            } catch (IllegalArgumentException e) {
+                                                System.out.println("Periodicity can be only expressed as 'Weekly', 'Monthly' or 'Biannual'");
+                                            }
+                                        }
+                                        case 9 -> {}
+                                        case 0 -> {
+                                            break outerloop;
+                                        }
+                                    }
+                                }
+				case 4 -> {
+                                    System.out.println("Input the ISBN Code of the Publication you want to delete");
+                                    removeByISBN(input.nextLine());
+                                    System.out.println("Any publications with the specified code have been removed from the archive");
+                                }
+				case 5 -> saveData();
+				case 6 -> printList(readData());
+				case 0 -> {
+                                    break outerloop;
+                                }					
 				}
 				mainMenu();				
 			} catch (NumberFormatException e) {
@@ -227,21 +227,27 @@ public class Archive {
 	}
 		
 	public void searchMenu() {
-		System.out.println(	  "------------------------------------------------- \n"
-							+ "What parameter do you want to use in your search? \n" 
-							+ "1. ISBN Code \n" 
-							+ "2. Year of Publishing \n"
-							+ "3. Author \n \n"
-							+ "9. Go Back \n" 
-							+ "0. Turn Off the Interactive Archive \n");
+		System.out.println("""
+                                   ------------------------------------------------- 
+                                   What parameter do you want to use in your search? 
+                                   1. ISBN Code 
+                                   2. Year of Publishing 
+                                   3. Author 
+                                    
+                                   9. Go Back 
+                                   0. Turn Off the Interactive Archive 
+                                   """);
 	}
 		
 	public void addMenu() {
-		System.out.println(	  "-------------------------------------------------"
-							+ "What kind of Publication do you want to add? \n" 
-							+ "1. Book \n" 
-							+ "2. Magazine \n \n"								
-							+ "9. Go Back \n" 
-							+ "0. Turn Off the Interactive Archive \n");
+		System.out.println("""
+                                   -------------------------------------------------
+                                   What kind of Publication do you want to add? 
+                                   1. Book 
+                                   2. Magazine 
+                                    
+                                   9. Go Back 
+                                   0. Turn Off the Interactive Archive 
+                                   """);
 	}	
 }

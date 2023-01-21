@@ -2,7 +2,7 @@ package main;
 
 public class LibraryCatalog {
 	
-	private static Archive archive = new Archive();	
+	private static final Archive archive = new Archive();
 
 	public static void main(String[] args) {
 		
