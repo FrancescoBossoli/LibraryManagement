@@ -1,5 +1,7 @@
 package main;
 
+import management.Archive;
+
 public class LibraryCatalog {
 	
 	private static final Archive archive = new Archive();
